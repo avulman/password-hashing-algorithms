@@ -1,3 +1,6 @@
+import sys
+import time
+
 EXIT_STATEMENTS = ["Q", "QUIT", "EXIT"]
 HASHING_ALGORITHMS = ["MD5", "SHA-1", "SHA-2", "NTLM", "LANMAN"]
 

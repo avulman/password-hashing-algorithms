@@ -1,5 +1,6 @@
 import sys
 import time
+import hashlib
 
 EXIT_STATEMENTS = ["Q", "QUIT", "EXIT"]
 HASHING_ALGORITHMS = ["MD5", "SHA-1", "SHA-2", "NTLM", "LANMAN"]
@@ -30,11 +31,10 @@ def learn_more(selected_algorithm):
     print("You selected » Learn more about the", selected_algorithm + " «\n")
 
 def hash_password(selected_algorithm):
-    print("\nYou selected: » Hash a password « \n"
-          "In this case, you will hash using", selected_algorithm, "\n")
+    print("In this case, you will hash using", selected_algorithm, "\n")
     password_to_hash = ""
     while not password_to_hash:
-        password_to_hash = input("For demonstration purposes, pick a password that is <= 16 characters\n"
+        password_to_hash = input("Select a password that is <= 16 characters\n"
                                    "* Enter a password you would like to hash: ")
         if not password_to_hash:
             print("Password must be at least 1 character.")
@@ -42,10 +42,18 @@ def hash_password(selected_algorithm):
             print("Password exceeds length criteria.")
         else:
             print("Hashing »", password_to_hash, "«\n")
+            hashed_password = md5(password_to_hash)
+            print("MD5 Hashed Password:", hashed_password)
 
-    
+def md5(password_to_hash):
+    md5_hasher = hashlib.md5() # create MD5 hash object
+    md5_hasher.update(password_to_hash.encode('utf-8')) # update the hash object with the bytes-like object (encoded text)
+    hashed_password = md5_hasher.hexdigest() # get the hexadecimal digest of the hash
+
+    return hashed_password
+
 def selected_statement(option):
-    print("You selected", option)
+    print("You selected »", option, "«")
 
 def select_algorithm():
     while True:
@@ -92,7 +100,6 @@ def select_main_features(selected_algorithm):
             learn_more(selected_algorithm)
             option_2_selected = True
         elif option.strip() == "3":
-            selected_statement(option)
             hash_password(selected_algorithm)
         else:
             invalid_selection()

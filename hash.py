@@ -4,27 +4,25 @@ import hashlib
 import secrets
 
 EXIT_STATEMENTS = ["Q", "QUIT", "EXIT"]
-HASHING_ALGORITHMS = ["MD5", "SHA-1", "SHA-2", "NTLM", "LANMAN"]
-first_program_iteration = True
+HASHING_ALGORITHMS = ["MD5", "SHA-1", "SHA-256", "SHA3-512", "BLAKE2S"]
+
 
 def print_intro():
-    global first_program_iteration
     print("╔═══════════════════════════════════════════════╗\n"
-          "|   Welcome to the password hashing program!    |\n"
+          "|   Welcome to the Password Hashing Program!    |\n"
           "╞═══════════════════════════════════════════════╡\n"
           "|   This program showcases 5 common hashing     |\n"
-          "|   algorithms including: MD5, SHA-1, SHA-2,    |\n"
-          "|   NTLM, and LANMAN.                           |\n"                        
+          "|   algorithms including: MD5, SHA-1, SHA-256,  |\n"
+          "|   SHA3-512, and blake2s.                      |\n"                        
           "╚═══════════════════════════════════════════════╝\n")
-    first_program_iteration = False
 
 def explain_algorithm():
-    print("\nYou selected: » What is a hashing algorithm? «\n")
-    print("Hashing is a one-way function to scramble data — it takes\n"
-        "readable text and transforms it into a completely different\n"
-        "string of characters with a set length. However, unlike other\n"
-        "encryption algorithms that transform data, hashing is nearly \n"
-        "impossible to revert.\n")
+    print("\nYou selected: » What is a hashing algorithm? «\n"
+          "\nHashing is a one-way function to scramble data — it takes\n"
+          "readable text and transforms it into a completely different\n"
+          "string of characters with a set length. However, unlike other\n"
+          "encryption algorithms that transform data, hashing is nearly \n"
+          "impossible to revert.\n")
 
 def invalid_selection():
     print("Invalid selection. Try again or enter 'Q' to quit.")
@@ -43,22 +41,16 @@ def hash_password(selected_algorithm):
                                    "* Password you would like to hash: ")
         if not password_to_hash:
             print("Password must be at least 1 character.")
-        elif len(password_to_hash) > 16 or len(password_to_hash) < 1:
+        elif not 1 <= len(password_to_hash) <= 16:
             print("Password must be 1-16 characters in length.")
         else:
             while not option_1_selected == True:
-                option = input("\n(1) Add a salt. \n"
+                option = input("\n(1) Add a salt.\n"
                     "(2) Do not add a salt.\n"
                     "(3) What is a salt?\n"
                     "* Select an option: ")
                 pre_salt_password = password_to_hash
-                if option == "3":
-                    print("A salt is a randomly generated string of characters that\n"
-                        "is added to a password before it is hashed. The purpose of\n"
-                        "adding a salt is to enhance the security of hashed passwords,\n"
-                        "particularly against dictionary and rainbow table attacks.\n")
-                    option_1_selected = False
-                elif option == "1":
+                if option == "1":
                     print("\nSalting your password!")
                     salt = generate_salt()
                     password_to_hash = salt_password(password_to_hash, salt)
@@ -67,6 +59,11 @@ def hash_password(selected_algorithm):
                 elif option == "2":
                     print("No worries.")
                     option_2_selected = True
+                elif option == "3":
+                    print("A salt is a randomly generated string of characters that\n"
+                        "is added to a password before it is hashed. The purpose of\n"
+                        "adding a salt is to enhance the security of hashed passwords,\n"
+                        "particularly against dictionary and rainbow table attacks.\n")
                 else:
                     invalid_selection()
 
@@ -82,6 +79,14 @@ def hash_password(selected_algorithm):
                 print("Hashing »", password_to_hash, "«\n")
                 if selected_algorithm == "MD5":
                     hashed_password = md5(password_to_hash)
+                elif selected_algorithm == "SHA-1":
+                    hashed_password = sha_1(password_to_hash)
+                elif selected_algorithm == "SHA-256":
+                    hashed_password = sha_256(password_to_hash)
+                elif selected_algorithm == "SHA3-512":
+                    hashed_password = sha3_512(password_to_hash)
+                elif selected_algorithm == "blake2s":
+                    hashed_password = blake2s(password_to_hash)
                 else:
                     print("This hash function has not been implemented yet!")
 
@@ -99,7 +104,30 @@ def md5(password_to_hash):
     md5_hasher = hashlib.md5() # create MD5 hash object
     md5_hasher.update(password_to_hash.encode('utf-8')) # update the hash object with the bytes-like object (encoded text)
     hashed_password = md5_hasher.hexdigest() # get the hexadecimal digest of the hash
+    return hashed_password
 
+def sha_1(password_to_hash):
+    sha_1_hasher = hashlib.sha1()
+    sha_1_hasher.update(password_to_hash.encode('utf-8'))
+    hashed_password = sha_1_hasher.hexdigest()
+    return hashed_password
+
+def sha_256(password_to_hash):
+    sha_256_hasher = hashlib.sha256()
+    sha_256_hasher.update(password_to_hash.encode('utf-8'))
+    hashed_password = sha_256_hasher.hexdigest()
+    return hashed_password
+
+def sha3_512(password_to_hash):
+    sha3_512_hasher = hashlib.sha3_512()
+    sha3_512_hasher.update(password_to_hash.encode('utf-8'))
+    hashed_password = sha3_512_hasher.hexdigest()
+    return hashed_password  
+
+def blake2s(password_to_hash):
+    blake2s_hasher = hashlib.blake2s()
+    blake2s_hasher.update(password_to_hash.encode('utf-8'))
+    hashed_password = blake2s_hasher.hexdigest()
     return hashed_password
 
 def selected_statement(option):
@@ -155,11 +183,8 @@ def select_main_features(selected_algorithm):
         else:
             invalid_selection()
 
-def main():
-    # TODO implement to loop program in a clean manner.
-    # completed_program = False 
-    if first_program_iteration == True:
-        print_intro()
+def main(): 
+    print_intro()
 
     selected_algorithm = select_algorithm()
     select_main_features(selected_algorithm)
